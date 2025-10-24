@@ -1,0 +1,40 @@
+import React from 'react';
+import WalletConnect from '../ui/WalletConnect';
+
+const Header: React.FC = () => {
+  return (
+    <div className="flex flex-col md:flex-row justify-between items-center absolute px-3 md:px-5 top-3 md:top-5 w-full z-10">
+      {/* Mobile Layout: Logo and button stacked */}
+      <div className="flex justify-between items-center w-full md:hidden mb-4 header-container">
+        <img
+          src="/assets/logo.png"
+          className="max-w-[80px] w-full h-auto header-logo"
+          alt="Logo"
+          onError={(e) => {
+            // Fallback if logo doesn't exist
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        <div className="header-button">
+          <WalletConnect />
+        </div>
+      </div>
+
+      {/* Desktop Layout: Logo left, button right */}
+      <div className="hidden md:flex justify-between items-center w-full">
+        <img
+          src="/assets/logo.png"
+          className="max-w-[100px] w-full h-auto"
+          alt="Logo"
+          onError={(e) => {
+            // Fallback if logo doesn't exist
+            e.currentTarget.style.display = 'none';
+          }}
+        />
+        <WalletConnect />
+      </div>
+    </div>
+  );
+};
+
+export default Header;
