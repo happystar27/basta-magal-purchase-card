@@ -48,7 +48,7 @@ const TokenDisplay: React.FC = () => {
   };
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/20 mx-2 md:mx-0">
+    <div className="bg-gray-50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-gray-200 dark:border-gray-700 mx-2 md:mx-0 shadow-lg">
       <div className="flex items-center space-x-2 mb-6">
         <div className="w-8 h-8 bg-gradient-to-r from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
           <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -56,7 +56,7 @@ const TokenDisplay: React.FC = () => {
             <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 9.766 14 8.991 14 8c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 5.092V5z" clipRule="evenodd"/>
           </svg>
         </div>
-        <h3 className="text-white font-semibold text-lg">Token Information</h3>
+          <h3 className="text-gray-800 dark:text-white font-semibold text-lg">Token Information</h3>
       </div>
 
       <div className="space-y-4">
@@ -100,8 +100,8 @@ const TokenDisplay: React.FC = () => {
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <h4 className="text-white font-semibold text-lg truncate">{token.name}</h4>
-                  <p className="text-white/60 text-sm truncate">{token.description}</p>
+                    <h4 className="text-gray-800 dark:text-white font-semibold text-lg truncate">{token.name}</h4>
+                    <p className="text-gray-700 dark:text-gray-400 text-sm truncate">{token.description}</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2 flex-shrink-0">
@@ -110,7 +110,7 @@ const TokenDisplay: React.FC = () => {
                     Live
                   </span>
                 ) : (
-                  <span className="px-2 py-1 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-purple-300 text-xs font-medium rounded-full border border-purple-400/30 shadow-lg shadow-purple-500/20 animate-pulse whitespace-nowrap">
+                  <span className="px-2 py-1 bg-gradient-to-r from-purple-500/30 to-pink-500/30 text-purple-700 dark:text-purple-300 text-xs font-medium rounded-full border border-purple-400/30 shadow-lg shadow-purple-500/20 animate-pulse whitespace-nowrap">
                     Coming Soon
                   </span>
                 )}
@@ -119,13 +119,13 @@ const TokenDisplay: React.FC = () => {
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-white/70 text-sm">Contract Address</span>
+                  <span className="text-gray-700 dark:text-gray-400 text-sm">Contract Address</span>
                 {token.status === 'active' && (
                   <a
                     href={`https://solscan.io/token/${token.address}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-amber-400 hover:text-amber-300 transition-colors"
+                    className="text-amber-500 hover:text-amber-600 dark:text-amber-400 dark:hover:text-amber-300 transition-colors"
                     title="View on Solscan"
                   >
                     <FaExternalLinkAlt className="w-3 h-3" />
@@ -134,21 +134,21 @@ const TokenDisplay: React.FC = () => {
               </div>
               
               <div className="flex items-center space-x-2">
-                <div className="flex-1 bg-white/5 rounded-lg px-3 py-2 min-w-0">
-                  <code className="text-white font-mono text-xs sm:text-sm break-all">
+                <div className="flex-1 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2 min-w-0">
+                  <code className="text-gray-800 dark:text-white font-mono text-xs sm:text-sm break-all">
                     {formatAddress(token.address)}
                   </code>
                 </div>
                 {token.status === 'active' && (
                   <button
                     onClick={() => copyToClipboard(token.address, token.symbol)}
-                    className="p-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors group flex-shrink-0"
+                    className="p-2 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 rounded-lg transition-colors group flex-shrink-0"
                     title="Copy address"
                   >
                     {copiedAddress === token.symbol ? (
-                      <FaCheck className="w-4 h-4 text-green-400" />
+                      <FaCheck className="w-4 h-4 text-green-500 dark:text-green-400" />
                     ) : (
-                      <FaCopy className="w-4 h-4 text-white/60 group-hover:text-white" />
+                      <FaCopy className="w-4 h-4 text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200" />
                     )}
                   </button>
                 )}

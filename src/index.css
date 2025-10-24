@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import theme styles */
+@import './styles/themes.css';
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -11,6 +14,17 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background: #0d001a;
   color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background: #0f172a;
+  color: #f8fafc;
+}
+
+.light body {
+  background: #ffffff;
+  color: #1e293b;
 }
 
 .b-label {

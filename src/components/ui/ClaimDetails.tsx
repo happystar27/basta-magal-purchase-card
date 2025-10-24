@@ -141,15 +141,15 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({ claimerInfo, isLoading = fa
 
   if (isLoading) {
     return (
-      <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/20">
-        <h3 className="text-white font-semibold text-lg mb-4">Buy Tokens</h3>
+      <div className="bg-gray-50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+        <h3 className="text-gray-800 dark:text-white font-semibold text-lg mb-4">Buy Tokens</h3>
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="flex items-center space-x-3">
               <div className="w-6 h-6 bg-amber-500/30 rounded animate-pulse"></div>
               <div className="flex-1">
-                <div className="h-4 bg-white/20 rounded animate-pulse mb-2"></div>
-                <div className="h-3 bg-white/10 rounded animate-pulse w-2/3"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse mb-2"></div>
+                <div className="h-3 bg-gray-100 dark:bg-gray-600 rounded animate-pulse w-2/3"></div>
               </div>
             </div>
           ))}
@@ -160,21 +160,21 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({ claimerInfo, isLoading = fa
 
 
   return (
-    <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-white/20">
-           
+    <div className="bg-gray-50 dark:bg-gray-800/50 backdrop-blur-sm rounded-lg p-4 md:p-6 border border-gray-200 dark:border-gray-700 shadow-lg">
+      
       <div className="space-y-4">
       
         {/* Buy Tokens Section - Only show when wallet is connected */}
         {isConnected && (
           <div className="mt-6 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
             <div className="flex items-center space-x-2 mb-3">
-              <FaShoppingCart className="w-5 h-5 text-amber-400" />
-              <h4 className="text-white font-semibold">Buy Tokens</h4>
-            </div>
-            
+              <FaShoppingCart className="w-5 h-5 text-amber-500 dark:text-amber-400" />
+              <h4 className="text-gray-800 dark:text-white font-semibold">Buy Tokens</h4>
+        </div>
+
             <div className="space-y-3">
               <div>
-                <label htmlFor="buyAmount" className="block text-white/70 text-sm mb-2">
+                <label htmlFor="buyAmount" className="block text-gray-700 dark:text-gray-400 text-sm mb-2">
                   Amount (USDT)
                 </label>
                 <input
@@ -186,7 +186,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({ claimerInfo, isLoading = fa
                   min="0"
                   step="0.01"
                   disabled={isProcessing}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md text-gray-800 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed shadow-sm"
                 />
               </div>
 
@@ -211,7 +211,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({ claimerInfo, isLoading = fa
                 )}
               </button>
 
-              <p className="text-white/50 text-xs text-center">
+              <p className="text-gray-600 dark:text-gray-400 text-xs text-center">
                 Powered by Magallaneer - Buy crypto with card
               </p>
             </div>

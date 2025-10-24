@@ -1,0 +1,147 @@
+/* Light Theme (Default) */
+:root,
+.light {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f8fafc;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --border-primary: #e2e8f0;
+  --border-secondary: #cbd5e1;
+  --accent-primary: #ffd966;
+  --accent-secondary: #f59e0b;
+  --shadow-primary: rgba(0, 0, 0, 0.1);
+  --shadow-secondary: rgba(0, 0, 0, 0.05);
+}
+
+/* Dark Theme */
+.dark {
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-tertiary: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --border-primary: #334155;
+  --border-secondary: #475569;
+  --accent-primary: #ffd966;
+  --accent-secondary: #f59e0b;
+  --shadow-primary: rgba(0, 0, 0, 0.3);
+  --shadow-secondary: rgba(0, 0, 0, 0.2);
+}
+
+/* Apply theme variables */
+.light {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+.dark {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Theme-aware components using CSS variables */
+.theme-bg-primary {
+  background-color: var(--bg-primary) !important;
+}
+
+.theme-bg-secondary {
+  background-color: var(--bg-secondary) !important;
+}
+
+.theme-bg-tertiary {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.theme-text-primary {
+  color: var(--text-primary) !important;
+}
+
+.theme-text-secondary {
+  color: var(--text-secondary) !important;
+}
+
+.theme-text-muted {
+  color: var(--text-muted) !important;
+}
+
+.theme-border-primary {
+  border-color: var(--border-primary) !important;
+}
+
+.theme-border-secondary {
+  border-color: var(--border-secondary) !important;
+}
+
+.theme-shadow-primary {
+  box-shadow: 0 4px 6px -1px var(--shadow-primary) !important;
+}
+
+.theme-shadow-secondary {
+  box-shadow: 0 2px 4px -1px var(--shadow-secondary) !important;
+}
+
+/* Smooth transitions for theme changes */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Override existing classes to use theme variables */
+.light .bg-white\/10 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.light .bg-white\/20 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.light .text-white {
+  color: var(--text-primary) !important;
+}
+
+.light .text-white\/70 {
+  color: var(--text-secondary) !important;
+}
+
+.light .text-white\/60 {
+  color: var(--text-muted) !important;
+}
+
+.light .border-white\/20 {
+  border-color: var(--border-primary) !important;
+}
+
+.dark .bg-white\/10 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .bg-white\/20 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.dark .text-white {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-white\/70 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-white\/60 {
+  color: var(--text-muted) !important;
+}
+
+.dark .border-white\/20 {
+  border-color: var(--border-primary) !important;
+}
+
+/* Additional theme overrides for better coverage */
+.light .placeholder-white\/50 {
+  color: var(--text-muted) !important;
+}
+
+.dark .placeholder-white\/50 {
+  color: var(--text-muted) !important;
+}

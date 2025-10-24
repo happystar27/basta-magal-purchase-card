@@ -1,15 +1,18 @@
 import { Header, BridgeHeader, ClaimInfo } from './components';
 import BackgroundVideo from './components/layout/BackgroundVideo';
 import { WalletProvider } from './contexts/WalletContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './components/ui/NotificationProvider';
 import WallaneerEmailHandler from './components/ui/WallaneerEmailHandler';
 import WalletModalCustomization from './components/ui/WalletModalCustomization';
+// import ThemeDebug from './components/ui/ThemeDebug';
 
 function App() {
   return (
-    <NotificationProvider>
-      <WalletProvider>
-        <div className="App relative min-h-screen flex flex-col overflow-hidden">
+    <ThemeProvider>
+      <NotificationProvider>
+        <WalletProvider>
+          <div className="App relative min-h-screen flex flex-col overflow-hidden">
           {/* Background */}
           {/* <BackgroundVideo /> */}
 
@@ -31,9 +34,13 @@ function App() {
           
           {/* Wallet Modal Customization */}
           <WalletModalCustomization />
+          
+          {/* Theme Debug - Remove in production */}
+          {/* <ThemeDebug /> */}
         </div>
-      </WalletProvider>
-    </NotificationProvider>
+        </WalletProvider>
+      </NotificationProvider>
+    </ThemeProvider>
   );
 }
 
