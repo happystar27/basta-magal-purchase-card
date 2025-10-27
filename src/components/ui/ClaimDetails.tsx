@@ -23,46 +23,6 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({ claimerInfo, isLoading = fa
   const [isProcessing, setIsProcessing] = useState(false);
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null);
 
-  // Token data
-  const tokens = [
-    {
-      name: 'MAGAL',
-      symbol: 'MAGAL',
-      icon: '/assets/logo.png',
-      address: 'A2ZbCHUEiHgSwFJ9EqgdYrFF255RQpAZP2xEC62fpump',
-      status: 'active',
-      description: 'Magallaneer native token'
-    },
-    {
-      name: 'BASTA',
-      symbol: 'BASTA', 
-      icon: '/assets/Logo-basta.png',
-      address: 'Coming Soon',
-      status: 'coming-soon',
-      description: 'Basta protocol token'
-    }
-  ];
-  const formatAmount = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 2,
-    }).format(amount);
-  };
-
-  const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
-
-  const formatTransactionHash = (hash: string) => {
-    if (!hash) return 'N/A';
-    return `${hash.slice(0, 6)}...${hash.slice(-4)}`;
-  };
 
   const handleBuyTokens = () => {
     const amountToBuy = Number(buyAmount);

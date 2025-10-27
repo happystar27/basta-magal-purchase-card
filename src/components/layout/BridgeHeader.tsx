@@ -7,7 +7,7 @@ const BridgeHeader: React.FC = () => {
         $MAGAL & $BASTA
       </h1>
       <div className="mt-2 font-medium">
-        <span className="text-[12px] sm:text-[14px] md:text-[18px] text-gray-800 dark:text-gray-400 b-label leading-relaxed">
+        <span className="text-[12px] sm:text-[14px] md:text-[18px] text-gray-500 dark:text-gray-400 b-label leading-relaxed font-medium">
           Basta & Magal Made Easy:<br className="sm:hidden" />
           <span className="hidden sm:inline"> </span>
           One Card, Balanced Tokens,<br className="sm:hidden" />
