@@ -23,45 +23,28 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-  const [theme, setTheme] = useState<Theme>(() => {
-    // Check localStorage first, then system preference
-    const savedTheme = localStorage.getItem('theme') as Theme;
-    if (savedTheme) {
-      return savedTheme;
-    }
-    
-    // Check system preference
-    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
-    
-    return 'light';
-  });
-
-  const toggleTheme = () => {
-    setTheme(prevTheme => {
-      const newTheme = prevTheme === 'light' ? 'dark' : 'light';
-      localStorage.setItem('theme', newTheme);
-      return newTheme;
-    });
-  };
+  // Always use light theme for doodle style
+  const [theme] = useState<Theme>('light');
 
   useEffect(() => {
-    // Apply theme to document
+    // Always apply light theme
     document.documentElement.classList.remove('light', 'dark');
-    document.documentElement.classList.add(theme);
+    document.documentElement.classList.add('light');
     
     // Update meta theme-color
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (metaThemeColor) {
-      metaThemeColor.setAttribute('content', theme === 'dark' ? '#1a1a1a' : '#ffd966');
+      metaThemeColor.setAttribute('content', '#ffd966');
     }
-  }, [theme]);
+  }, []);
+
+  // No-op function since we always use light theme
+  const toggleTheme = () => {};
 
   const value: ThemeContextType = {
     theme,
     toggleTheme,
-    isDark: theme === 'dark',
+    isDark: false,
   };
 
   return (

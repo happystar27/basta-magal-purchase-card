@@ -1,0 +1,274 @@
+.basta-images-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.basta-image {
+  width: 200px;
+  height: 200px;
+  object-fit: contain;
+  object-position: top center;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  transition: opacity 0.3s ease;
+  --base-rotation: 0deg;
+  --base-scale: 1;
+}
+
+/* Animation 1: Float up and down */
+@keyframes basta-float-1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateY(-20px) rotate(calc(var(--base-rotation) + 3deg)) scale(calc(var(--base-scale) * 1.025));
+  }
+}
+
+/* Animation 2: Gentle sway */
+@keyframes basta-sway-2 {
+  0%, 100% {
+    transform: translateX(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateX(15px) rotate(calc(var(--base-rotation) + 3deg)) scale(calc(var(--base-scale) * 1.022));
+  }
+}
+
+/* Animation 3: Rotate and pulse */
+@keyframes basta-rotate-pulse-3 {
+  0%, 100% {
+    transform: rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.071));
+    opacity: 1;
+  }
+}
+
+/* Animation 4: Bounce */
+@keyframes basta-bounce-4 {
+  0%, 100% {
+    transform: translateY(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateY(-15px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.024));
+  }
+}
+
+/* Animation 5: Slide and rotate */
+@keyframes basta-slide-5 {
+  0%, 100% {
+    transform: translateX(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateX(-10px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.027));
+  }
+}
+
+/* Animation 6: Gentle float */
+@keyframes basta-float-6 {
+  0%, 100% {
+    transform: translateY(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateY(-25px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.022));
+  }
+}
+
+/* Animation 7: Slow rotation */
+@keyframes basta-slow-rotate-7 {
+  0% {
+    transform: rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  100% {
+    transform: rotate(calc(var(--base-rotation) + 3deg)) scale(calc(var(--base-scale) * 1.025));
+  }
+}
+
+/* Animation 8: Pulse */
+@keyframes basta-pulse-8 {
+  0%, 100% {
+    transform: scale(calc(var(--base-scale) * 1)) rotate(calc(var(--base-rotation) + 0deg));
+    opacity: 1;
+  }
+  50% {
+    transform: scale(calc(var(--base-scale) * 1.059)) rotate(calc(var(--base-rotation) + 2deg));
+    opacity: 1;
+  }
+}
+
+/* Animation 9: Float diagonal */
+@keyframes basta-diagonal-9 {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translate(10px, -15px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.024));
+  }
+}
+
+/* Animation 10: Wiggle */
+@keyframes basta-wiggle-10 {
+  0%, 100% {
+    transform: rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  25% {
+    transform: rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.027));
+  }
+  75% {
+    transform: rotate(calc(var(--base-rotation) - 2deg)) scale(calc(var(--base-scale) * 1.027));
+  }
+}
+
+/* Animation 11: Float up */
+@keyframes basta-float-up-11 {
+  0%, 100% {
+    transform: translateY(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateY(-18px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.022));
+  }
+}
+
+/* Animation 12: Rotate pulse */
+@keyframes basta-rotate-pulse-12 {
+  0%, 100% {
+    transform: rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.063));
+    opacity: 1;
+  }
+}
+
+/* Animation 13: Gentle bounce */
+@keyframes basta-bounce-13 {
+  0%, 100% {
+    transform: translateY(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateY(-12px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.024));
+  }
+}
+
+/* Animation 14: Sway and rotate */
+@keyframes basta-sway-rotate-14 {
+  0%, 100% {
+    transform: translateX(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateX(-8px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.029));
+  }
+}
+
+/* Animation 15: Float slow */
+@keyframes basta-float-slow-15 {
+  0%, 100% {
+    transform: translateY(0px) rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+  }
+  50% {
+    transform: translateY(-22px) rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.033));
+  }
+}
+
+/* Animation 16: Pulse and rotate */
+@keyframes basta-pulse-rotate-16 {
+  0%, 100% {
+    transform: rotate(calc(var(--base-rotation) + 0deg)) scale(calc(var(--base-scale) * 1));
+    opacity: 1;
+  }
+  50% {
+    transform: rotate(calc(var(--base-rotation) + 2deg)) scale(calc(var(--base-scale) * 1.063));
+    opacity: 1;
+  }
+}
+
+/* Apply animations to each image */
+.basta-animation-1 {
+  animation: basta-float-1 4s ease-in-out infinite;
+}
+
+.basta-animation-2 {
+  animation: basta-sway-2 5s ease-in-out infinite;
+}
+
+.basta-animation-3 {
+  animation: basta-rotate-pulse-3 3.5s ease-in-out infinite;
+}
+
+.basta-animation-4 {
+  animation: basta-bounce-4 4.5s ease-in-out infinite;
+}
+
+.basta-animation-5 {
+  animation: basta-slide-5 5.5s ease-in-out infinite;
+}
+
+.basta-animation-6 {
+  animation: basta-float-6 4.2s ease-in-out infinite;
+}
+
+.basta-animation-7 {
+  animation: basta-slow-rotate-7 6s linear infinite;
+}
+
+.basta-animation-8 {
+  animation: basta-pulse-8 3.8s ease-in-out infinite;
+}
+
+.basta-animation-9 {
+  animation: basta-diagonal-9 4.8s ease-in-out infinite;
+}
+
+.basta-animation-10 {
+  animation: basta-wiggle-10 3.2s ease-in-out infinite;
+}
+
+.basta-animation-11 {
+  animation: basta-float-up-11 5.2s ease-in-out infinite;
+}
+
+.basta-animation-12 {
+  animation: basta-rotate-pulse-12 4.3s ease-in-out infinite;
+}
+
+.basta-animation-13 {
+  animation: basta-bounce-13 4.7s ease-in-out infinite;
+}
+
+.basta-animation-14 {
+  animation: basta-sway-rotate-14 5.8s ease-in-out infinite;
+}
+
+.basta-animation-15 {
+  animation: basta-float-slow-15 4.4s ease-in-out infinite;
+}
+
+.basta-animation-16 {
+  animation: basta-pulse-rotate-16 3.6s ease-in-out infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .basta-image {
+    width: 150px;
+    height: 150px;
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .basta-image {
+    width: 120px;
+    height: 120px;
+    opacity: 1;
+  }
+}

@@ -18,19 +18,47 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #0d001a;
-  color: white;
-  transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dark body {
-  background: #0f172a;
-  color: #f8fafc;
-}
-
-.light body {
-  background: #ffffff;
+  background-color: #ffffff;
+  background-image: url('/assets/bg.png');
+  background-size: 25%;
+  background-repeat: repeat;
+  background-position: 0 0;
   color: #1e293b;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  animation: doodle-bg-move 20s linear infinite;
+}
+
+@media screen and (max-width: 768px) {
+  body {
+    background-size: 80%;
+  }
+}
+
+.wallet-adapter-button-trigger {
+  background-color: #1f2937 !important;
+  height: 44px !important;
+  font-size: 16px !important;
+  text-transform: uppercase !important;
+  box-shadow: 3px 5px 0 rgba(107, 114, 128, 0.3) !important;
+}
+
+.wallet-adapter-dropdown {
+  width: 100% !important;
+  text-align: center !important;
+}
+
+.wallet-adapter-button {
+  width: 100% !important;
+  justify-content: center;
+}
+
+@keyframes doodle-bg-move {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 200px 200px;
+  }
 }
 
 .b-label {
@@ -299,99 +327,6 @@ code {
   }
 }
 
-/* Header mobile improvements */
-@media (max-width: 768px) {
-  /* Ensure header doesn't overlap with content */
-  .App {
-    padding-top: 140px !important;
-  }
-  
-  /* Mobile header positioning */
-  .header-mobile {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    background: rgba(0, 0, 0, 0.9) !important;
-    backdrop-filter: blur(10px) !important;
-    padding: 1rem !important;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
-  }
-  
-  /* Ensure header elements are properly spaced */
-  .header-container {
-    min-height: 90px !important;
-  }
-}
-
-/* Samsung Galaxy S8+ and similar devices */
-@media (max-width: 740px) {
-  .App {
-    padding-top: 150px !important;
-  }
-  
-  .header-container {
-    min-height: 100px !important;
-  }
-}
-
-/* iPhone SE and similar small devices */
-@media (max-width: 375px) {
-  .App {
-    padding-top: 160px !important;
-  }
-  
-  .header-container {
-    min-height: 110px !important;
-  }
-  
-  /* Increase spacing for very small screens */
-  .header-mobile {
-    padding: 1.25rem !important;
-  }
-  
-  /* Additional spacing for very small screens */
-  .bridge-header-mobile {
-    margin-top: 2rem !important;
-  }
-}
-
-/* Extra small devices (iPhone SE landscape, etc.) */
-@media (max-width: 320px) {
-  .App {
-    padding-top: 170px !important;
-  }
-  
-  .header-container {
-    min-height: 120px !important;
-  }
-  
-  .header-mobile {
-    padding: 1.5rem !important;
-  }
-}
-
-@media (max-width: 480px) {
-  /* Small mobile header adjustments */
-  .App {
-    padding-top: 100px !important;
-  }
-  
-  /* Header adjustments for small screens */
-  .header-mobile {
-    padding: 0.75rem !important;
-  }
-  
-  /* Logo and button sizing for small screens */
-  .header-logo {
-    max-width: 60px !important;
-  }
-  
-  .header-button {
-    padding: 0.5rem 1rem !important;
-    font-size: 0.875rem !important;
-  }
-}
 
 /* Filtros personalizados para el video */
 .video-filters {

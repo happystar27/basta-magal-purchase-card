@@ -1,23 +1,27 @@
-import { Header, BridgeHeader, ClaimInfo } from './components';
-import BackgroundVideo from './components/layout/BackgroundVideo';
+import { BridgeHeader, ClaimInfo } from './components';
 import { WalletProvider } from './contexts/WalletContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { NotificationProvider } from './components/ui/NotificationProvider';
 import WallaneerEmailHandler from './components/ui/WallaneerEmailHandler';
 import WalletModalCustomization from './components/ui/WalletModalCustomization';
-// import ThemeDebug from './components/ui/ThemeDebug';
+import ThemeToggle from './components/ui/ThemeToggle';
+import BastaImages from './components/ui/BastaImages';
+import AnimeBackgroundEffects from './components/ui/AnimeBackgroundEffects';
 
 function App() {
   return (
     <ThemeProvider>
       <NotificationProvider>
         <WalletProvider>
-          <div className="App relative min-h-screen flex flex-col overflow-hidden">
-          {/* Background */}
-          {/* <BackgroundVideo /> */}
-
+          <div className="flex overflow-hidden relative flex-col min-h-screen App">
+          {/* Anime-style background effects */}
+          <AnimeBackgroundEffects />
+          
+          {/* Decorative Basta Images */}
+          <BastaImages />
+          
           {/* Main content */}
-          <main className="flex-grow flex items-center justify-center md:pt-0 relative z-10">
+          <main className="flex relative z-10 flex-grow justify-center items-center md:pt-0">
             <div className="max-w-[500px] w-full md:p-6 p-3 mx-auto">
               <BridgeHeader />
               <div className="mt-6">
@@ -25,9 +29,6 @@ function App() {
               </div>
             </div>
           </main>
-
-          {/* Fixed header */}
-          <Header />
           
           {/* Wallaneer Email Modal Handler */}
           <WallaneerEmailHandler />
@@ -35,8 +36,6 @@ function App() {
           {/* Wallet Modal Customization */}
           <WalletModalCustomization />
           
-          {/* Theme Debug - Remove in production */}
-          {/* <ThemeDebug /> */}
         </div>
         </WalletProvider>
       </NotificationProvider>
