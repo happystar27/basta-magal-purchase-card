@@ -12,7 +12,7 @@ const Card: React.FC<CardProps> = ({
   variant = "default",
 }) => {
   const baseClasses =
-    "backdrop-blur-lg rounded-md p-4 md:p-6 border border-gray-200 dark:border-gray-700 shadow-lg";
+    "bg-gray-50 rounded-md p-4 md:p-6 border border-gray-200 dark:border-gray-700 shadow-lg";
 
   const variantClasses = {
     default: "",

@@ -7,6 +7,7 @@ import WalletModalCustomization from './components/ui/WalletModalCustomization';
 import ThemeToggle from './components/ui/ThemeToggle';
 import BastaImages from './components/ui/BastaImages';
 import AnimeBackgroundEffects from './components/ui/AnimeBackgroundEffects';
+import PoseCharacter from './components/ui/PoseCharacter';
 
 function App() {
   return (
@@ -23,10 +24,11 @@ function App() {
           {/* Main content */}
           <main className="flex relative z-10 flex-grow justify-center items-center md:pt-0">
             <div className="max-w-[500px] w-full md:p-6 p-3 mx-auto">
-              <BridgeHeader />
-              <div className="mt-6">
-                <ClaimInfo />
-              </div>
+              <PoseCharacter>
+                <div className="">
+                  <ClaimInfo />
+                </div>
+              </PoseCharacter>
             </div>
           </main>
           

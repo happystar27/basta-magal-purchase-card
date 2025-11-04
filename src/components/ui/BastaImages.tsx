@@ -37,12 +37,17 @@ const BastaImages: React.FC = () => {
         
         const animationClass = `basta-animation-${index + 1}`;
         
+        // Bottom 3 characters on each side to hide on mobile
+        // Left side: indices 5, 6, 7 (top: 58%, 70%, 85%)
+        // Right side: indices 13, 14, 15 (top: 60%, 73%, 88%)
+        const isBottomThree = (index >= 5 && index <= 7) || (index >= 13 && index <= 15);
+        
         return (
           <img
             key={num}
             src={`/assets/basta/${num}.png`}
             alt={`Basta ${num}`}
-            className={`basta-image ${animationClass}`}
+            className={`basta-image ${animationClass} ${isBottomThree ? 'basta-mobile-hide' : ''}`}
             style={{
               position: 'fixed',
               top: config.top,

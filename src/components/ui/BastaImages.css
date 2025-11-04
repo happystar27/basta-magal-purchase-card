@@ -256,12 +256,21 @@
   animation: basta-pulse-rotate-16 3.6s ease-in-out infinite;
 }
 
+/* Hide bottom 3 characters on mobile (no animation) */
+.basta-mobile-hide {
+  display: none;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .basta-image {
     width: 150px;
     height: 150px;
     opacity: 1;
+  }
+  
+  .basta-mobile-hide {
+    display: none;
   }
 }
 
@@ -270,5 +279,16 @@
     width: 120px;
     height: 120px;
     opacity: 1;
+  }
+  
+  .basta-mobile-hide {
+    display: none;
+  }
+}
+
+/* Desktop: show all characters */
+@media (min-width: 769px) {
+  .basta-mobile-hide {
+    display: block;
   }
 }
