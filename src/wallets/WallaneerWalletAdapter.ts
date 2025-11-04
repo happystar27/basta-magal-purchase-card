@@ -65,14 +65,28 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
 
   async connect(): Promise<void> {
     try {
-      if (this.connected || this.connecting) {
-       // console.log('🔄 Already connected or connecting, skipping...');
+      // If already connected, skip
+      if (this.connected) {
+        console.log('🔄 Already connected, skipping...');
         return;
       }
+      
+      // If connecting AND we have a pending email promise, skip
+      // Otherwise reset and allow reconnection
+      if (this.connecting) {
+        if (this._emailPromiseResolve) {
+          console.log('🔄 Already connecting with pending email request, skipping...');
+          return;
+        } else {
+          console.log('🔄 Connecting state was stuck, resetting...');
+          this._connecting = false;
+        }
+      }
+      
       if (this.readyState !== WalletReadyState.Installed) throw new WalletNotReadyError();
 
       this._connecting = true;
-     // console.log('🔄 Setting connecting state to true');
+      console.log('🔄 Setting connecting state to true');
 
       if (!this._magic) throw new WalletNotReadyError();
 
@@ -101,7 +115,9 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
           const email = await this.requestEmail();
           
           if (!email) {
-           // console.log('❌ User cancelled email input');
+            console.log('❌ User cancelled email input');
+            clearTimeout(connectTimeout);
+            this._connecting = false;
             throw new WalletConnectionError('Email input cancelled');
           }
           
@@ -209,7 +225,15 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
     console.log('🔄 Manually resetting connection state...');
     this._connecting = false;
     this._publicKey = null;
+    this._emailPromiseResolve = null; // Ensure any pending email promise is cleared
+    
+    // Force a disconnect event to reset the wallet state
     this.emit('disconnect');
+    
+    // Small delay to ensure state is fully reset
+    setTimeout(() => {
+      console.log('✅ Connection state fully reset');
+    }, 100);
   }
 
   // Email modal methods
@@ -228,10 +252,15 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
   }
 
   cancelEmail(): void {
+    console.log('❌ cancelEmail called');
     if (this._emailPromiseResolve) {
       this._emailPromiseResolve(null);
       this._emailPromiseResolve = null;
     }
+    
+    // Reset connection state when email is cancelled
+    this._connecting = false;
+    console.log('✅ Connection state reset, _connecting:', this._connecting);
   }
 
   async signTransaction<T extends Transaction>(transaction: T): Promise<T> {
@@ -290,3 +319,4 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
     }
   }
 }
+

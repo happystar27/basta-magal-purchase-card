@@ -39,7 +39,7 @@ const WallaneerEmailHandler: React.FC = () => {
   };
 
   const handleEmailCancel = () => {
-    console.log('❌ Email input cancelled');
+    console.log('❌ Email input cancelled by user');
     setIsModalOpen(false);
     setIsLoading(false);
     

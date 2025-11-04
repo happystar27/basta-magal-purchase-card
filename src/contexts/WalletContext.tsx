@@ -37,11 +37,37 @@ const WalletContextProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   const connect = async () => {
     try {
-      // Try to connect with Wallaneer first
+      console.log('🔗 Connect function called!');
+      console.log('Current wallet:', wallet?.adapter?.name);
+      console.log('Currently connecting:', connecting);
+      console.log('Currently connected:', connected);
+      
+      // If Wallaneer is already selected but not connected, deselect first
+      if (wallet?.adapter?.name === 'Wallaneer' && !connected && !connecting) {
+        console.log('🔄 Wallaneer already selected but not connected, deselecting first...');
+        await solanaDisconnect();
+        // Small delay to ensure disconnect completes
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      
+      console.log('✅ Calling select(Wallaneer)...');
+      // Always connect directly to Wallaneer without showing wallet selection dialog
       select('Wallaneer' as any);
+      
+      // Force trigger connection if wallet is already selected
+      if (wallet?.adapter?.name === 'Wallaneer') {
+        console.log('🔄 Wallet already selected, triggering connect...');
+        setTimeout(async () => {
+          try {
+            await wallet.adapter.connect();
+          } catch (err) {
+            console.error('Error forcing connection:', err);
+          }
+        }, 200);
+      }
     } catch (error) {
-     // console.error('Failed to connect with Wallaneer wallet:', error);
-      // Fallback to Phantom
+      // If Wallaneer fails for some reason, still try Phantom as fallback
+      console.error('Failed to connect with Wallaneer wallet:', error);
       select('Phantom' as any);
     }
   };
