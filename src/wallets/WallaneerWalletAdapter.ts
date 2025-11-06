@@ -82,7 +82,7 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
           this._connecting = false;
         }
       }
-      
+      ``
       if (this.readyState !== WalletReadyState.Installed) throw new WalletNotReadyError();
 
       this._connecting = true;
