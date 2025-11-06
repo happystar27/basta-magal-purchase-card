@@ -4,7 +4,12 @@ import WertWidget from "@wert-io/widget-initializer";
 import { signSmartContractData } from "@wert-io/widget-sc-signer";
 import { v4 as uuidv4 } from "uuid";
 import { Buffer } from 'buffer';
+import { PublicKey } from '@solana/web3.js';
 import '@solana/wallet-adapter-react-ui/styles.css';
+import { buildPurchaseWithSolInstruction, solToLamports } from '../../utils/solanaInstructionBuilder';
+import { SOLANA_CONFIG, calculatePurchaseAmounts } from '../../config/solanaAccounts';
+import { deriveRecipientTokenAccounts } from '../../utils/deriveATAs';
+import PaymentSuccessDialog from './PaymentSuccessDialog';
 
 // Needed to use signSmartContractData in browser
 if (typeof window !== 'undefined') {
@@ -20,13 +25,12 @@ const WERT_PARTNER_ID = import.meta.env.VITE_WERT_PARTNER_ID || "";
 const WERT_PRIVATE_KEY = import.meta.env.VITE_WERT_PRIVATE_KEY || "";
 const WERT_ORIGIN = "https://widget.wert.io";
 
-// Your Solana program ID
-const SOLANA_PROGRAM_ID = "GJYzfPqwEdZSLZqAYCGDceUF1PvVs4rfuRyJbT2px4Ks";
-
 const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
   const { connect, disconnect, isConnected, publicKey, isLoading } = useWallet();
   const [warning, setWarning] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [transactionSignature, setTransactionSignature] = useState<string | undefined>();
 
   // Clear warning when amount changes
   useEffect(() => {
@@ -56,23 +60,81 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
     setIsProcessing(true);
     
     try {
-      const amountValue = Number(amount);
+      const usdAmount = Number(amount);
       
       console.log("💰 Opening Wert widget for purchase:");
-      console.log("  Amount (USD):", amountValue);
+      console.log("  Amount (USD):", usdAmount);
       console.log("  Recipient:", publicKey);
-      console.log("  Program ID:", SOLANA_PROGRAM_ID);
+      console.log("  Program ID:", SOLANA_CONFIG.PROGRAM_ID);
       
-      // For Solana, Wert expects a simple program call
-      // The sc_input_data should be the recipient wallet address
+      // Calculate purchase amounts - converts USD to SOL and calculates 80/20 split
+      // Token price will be fetched from Jupiter/DexScreener automatically
+      const amounts = await calculatePurchaseAmounts(usdAmount);
+      
+      console.log("📊 Purchase breakdown:");
+      console.log("  SOL amount:", amounts.solAmount, "SOL");
+      console.log("  Total lamports:", amounts.totalLamports);
+      console.log("  Swap amount (80%):", amounts.swapLamports / 1_000_000_000, "SOL");
+      console.log("  Distribution value (20%):", amounts.distributionValueLamports / 1_000_000_000, "SOL");
+      console.log("  SPL tokens to send:", amounts.splTokenAmount);
+      console.log("  Min Token2022 to receive:", amounts.minimumToken2022Out);
+      
+      // Derive recipient's Associated Token Accounts (ATAs)
+      const { splTokenAccount: recipientSplTokenAccount, token2022Account: recipientToken2022Account } = 
+        await deriveRecipientTokenAccounts(
+          publicKey,
+          SOLANA_CONFIG.SPL_TOKEN_MINT,
+          SOLANA_CONFIG.TOKEN2022_MINT
+        );
+      
+      console.log("📝 Derived recipient token accounts:");
+      console.log("  SPL Token Account:", recipientSplTokenAccount);
+      console.log("  Token2022 Account:", recipientToken2022Account);
+      
+      // Build the purchase_with_sol instruction
+      const scInputData = await buildPurchaseWithSolInstruction({
+        programId: SOLANA_CONFIG.PROGRAM_ID,
+        programState: SOLANA_CONFIG.PROGRAM_STATE,
+        payer: SOLANA_CONFIG.WERT_SIGNING_ACCOUNT, // Wert's signing account
+        programSplTokenAccount: SOLANA_CONFIG.PROGRAM_SPL_TOKEN_ACCOUNT,
+        recipientSplTokenAccount,
+        splTokenMint: SOLANA_CONFIG.SPL_TOKEN_MINT,
+        programToken2022Account: SOLANA_CONFIG.PROGRAM_TOKEN2022_ACCOUNT,
+        recipientToken2022Account,
+        recipientAddress: publicKey,
+        raydiumAmmProgram: SOLANA_CONFIG.RAYDIUM_AMM_PROGRAM,
+        ammId: SOLANA_CONFIG.AMM_ID,
+        ammAuthority: SOLANA_CONFIG.AMM_AUTHORITY,
+        ammOpenOrders: SOLANA_CONFIG.AMM_OPEN_ORDERS,
+        ammTargetOrders: SOLANA_CONFIG.AMM_TARGET_ORDERS,
+        poolCoinTokenAccount: SOLANA_CONFIG.POOL_COIN_TOKEN_ACCOUNT,
+        poolPcTokenAccount: SOLANA_CONFIG.POOL_PC_TOKEN_ACCOUNT,
+        serumProgramId: SOLANA_CONFIG.SERUM_PROGRAM_ID,
+        serumMarket: SOLANA_CONFIG.SERUM_MARKET,
+        serumBids: SOLANA_CONFIG.SERUM_BIDS,
+        serumAsks: SOLANA_CONFIG.SERUM_ASKS,
+        serumEventQueue: SOLANA_CONFIG.SERUM_EVENT_QUEUE,
+        serumCoinVaultAccount: SOLANA_CONFIG.SERUM_COIN_VAULT_ACCOUNT,
+        serumPcVaultAccount: SOLANA_CONFIG.SERUM_PC_VAULT_ACCOUNT,
+        serumVaultSigner: SOLANA_CONFIG.SERUM_VAULT_SIGNER,
+        tokenProgram: SOLANA_CONFIG.TOKEN_PROGRAM,
+        systemProgram: SOLANA_CONFIG.SYSTEM_PROGRAM,
+        amount: amounts.totalLamports,
+        splTokenAmount: amounts.splTokenAmount,
+        minimumToken2022Out: amounts.minimumToken2022Out,
+      });
+      
+      console.log("🔧 Built sc_input_data (hex):", scInputData.substring(0, 100) + "...");
+      
+      // Sign the smart contract data with Wert
       const signedData = signSmartContractData(
         {
-          address: publicKey, // Recipient Solana address
+          address: SOLANA_CONFIG.WERT_SIGNING_ACCOUNT, // Wert's signing account that holds funds
           commodity: "SOL",
           network: "solana",
-          commodity_amount: amountValue,
-          sc_address: SOLANA_PROGRAM_ID, // Your Solana program ID
-          sc_input_data: publicKey, // Pass recipient address as input
+          commodity_amount: amounts.solAmount, // SOL amount (not USD)
+          sc_address: SOLANA_CONFIG.PROGRAM_ID, // Your Solana program ID
+          sc_input_data: scInputData, // Hex-encoded instruction
         },
         WERT_PRIVATE_KEY
       );
@@ -100,7 +162,31 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
             console.log("Payment status:", data);
             if (data.status === "success") {
               console.log("✅ Payment successful!");
-              // Handle successful payment
+              console.log("Payment data:", JSON.stringify(data, null, 2));
+              
+              // Extract transaction signature from various possible fields
+              const txSignature = 
+                data.tx_id || 
+                data.transaction_id || 
+                data.signature || 
+                data.tx_hash ||
+                data.transaction_hash ||
+                data.txId ||
+                data.transactionId;
+              
+              if (txSignature) {
+                console.log("Transaction signature:", txSignature);
+                setTransactionSignature(txSignature);
+              } else {
+                console.warn("No transaction signature found in payment data");
+              }
+              
+              setIsProcessing(false);
+              setShowSuccessDialog(true);
+            } else if (data.status === "error" || data.status === "failed") {
+              setIsProcessing(false);
+              console.error("Payment failed:", data);
+              alert("Payment failed. Please try again.");
             }
           },
         },
@@ -144,45 +230,59 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
 
   const getButtonText = () => {
     if (isLoading) return 'Connecting...';
-    if (isConnected && publicKey) {
-      return `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
-    }
+    // if (isConnected && publicKey) {
+    //   return `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
+    // }
     return 'BUY';
   };
 
   return (
-    <div className="wallet-adapter-button-wrapper">
-      <button
-        onClick={handleClick}
-        disabled={isLoading}
-        className="w-full flex items-center justify-center cursor-pointer border-none text-white font-semibold uppercase disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 overflow-hidden"
-        style={{
-          fontFamily: 'DM Sans, Roboto, Helvetica Neue, Helvetica, Arial, sans-serif',
-          fontSize: '14px',
-          fontWeight: 600,
-          minHeight: '44px',
-          height: 'auto',
-          lineHeight: '1.2',
-          padding: '10px 20px',
-          borderRadius: '4px',
-          backgroundColor: '#1f2937',
-          textTransform: 'uppercase',
-          boxShadow: '3px 5px #6b72804d',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        {isLoading && (
-          <svg className="inline-block mr-2 -ml-1 w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+    <>
+      <div className="wallet-adapter-button-wrapper">
+        <button
+          onClick={handleClick}
+          disabled={isLoading}
+          className="w-full flex items-center justify-center cursor-pointer border-none text-white font-semibold uppercase disabled:opacity-70 disabled:cursor-not-allowed transition-all duration-200 overflow-hidden"
+          style={{
+            fontFamily: 'DM Sans, Roboto, Helvetica Neue, Helvetica, Arial, sans-serif',
+            fontSize: '14px',
+            fontWeight: 600,
+            minHeight: '44px',
+            height: 'auto',
+            lineHeight: '1.2',
+            padding: '10px 20px',
+            borderRadius: '4px',
+            backgroundColor: '#1f2937',
+            textTransform: 'uppercase',
+            boxShadow: '3px 5px #6b72804d',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {isLoading && (
+            <svg className="inline-block mr-2 -ml-1 w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          )}
+          {getButtonText()}
+        </button>
+        {warning && (
+          <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>
         )}
-        {getButtonText()}
-      </button>
-      {warning && (
-        <p className="mt-2 text-sm text-red-500 text-center">{warning}</p>
-      )}
-    </div>
+      </div>
+
+      {/* Payment Success Dialog */}
+      <PaymentSuccessDialog
+        isOpen={showSuccessDialog}
+        onClose={() => {
+          setShowSuccessDialog(false);
+          setTransactionSignature(undefined);
+        }}
+        {...(transactionSignature ? { transactionSignature } : {})}
+        {...(amount ? { amount } : {})}
+        {...(publicKey ? { walletAddress: publicKey } : {})}
+      />
+    </>
   );
 };
 
