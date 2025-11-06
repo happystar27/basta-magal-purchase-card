@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useWallet } from '../../contexts/WalletContext';
 import WertWidget from "@wert-io/widget-initializer";
 import { signSmartContractData } from "@wert-io/widget-sc-signer";
@@ -31,6 +31,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
   const [transactionSignature, setTransactionSignature] = useState<string | undefined>();
+  const shouldOpenWertAfterConnect = useRef(false);
 
   // Clear warning when amount changes
   useEffect(() => {
@@ -39,22 +40,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
     }
   }, [amount, warning]);
 
-  // Open Wert widget when wallet is connected
-  useEffect(() => {
-    if (isConnected && publicKey && amount && !isProcessing) {
-      console.log('✅ Wallet connected successfully!');
-      console.log('📍 Public Key:', publicKey);
-      console.log('💰 Amount:', amount ? `$${amount} USD` : 'Not specified');
-      console.log('🔗 Wallet Address:', publicKey);
-      
-      // Open Wert widget for Solana
-      openWertWidget();
-    } else if (!isConnected && !isLoading) {
-      console.log('🔌 Wallet disconnected');
-    }
-  }, [isConnected, publicKey, amount, isLoading]);
-
-  const openWertWidget = async () => {
+  const openWertWidget = useCallback(async () => {
     if (!amount || !publicKey) return;
     
     setIsProcessing(true);
@@ -204,7 +190,23 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
       setIsProcessing(false);
       alert("Failed to open payment widget: " + (error as Error).message);
     }
-  };
+  }, [amount, publicKey]);
+
+  // Open Wert widget after wallet connects (only if triggered by button click)
+  useEffect(() => {
+    if (isConnected && publicKey && amount && shouldOpenWertAfterConnect.current) {
+      console.log('✅ Wallet connected successfully!');
+      console.log('📍 Public Key:', publicKey);
+      console.log('💰 Amount:', amount ? `$${amount} USD` : 'Not specified');
+      console.log('🔗 Wallet Address:', publicKey);
+      
+      // Reset the flag
+      shouldOpenWertAfterConnect.current = false;
+      
+      // Open Wert widget for Solana
+      openWertWidget();
+    }
+  }, [isConnected, publicKey, amount, openWertWidget]);
 
   const handleClick = () => {
     console.log('🖱️ Wallet button clicked!');
@@ -212,18 +214,22 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
     console.log('isLoading:', isLoading);
     console.log('Amount:', amount);
     
-    if (isConnected) {
-      //disconnect();
+    // Check if amount is entered (required for both cases)
+    if (!amount || amount.trim() === '' || Number(amount) <= 0 || isNaN(Number(amount))) {
+      setWarning('Please enter a valid amount to buy');
+      return;
+    }
+    
+    setWarning('');
+    
+    if (isConnected && publicKey) {
+      // Wallet is already connected -> directly open Wert widget
+      console.log('✅ Wallet already connected, opening Wert widget...');
       openWertWidget();
-      setWarning('');
     } else {
-      // Check if amount is entered
-      if (!amount || amount.trim() === '' || Number(amount) <= 0 || isNaN(Number(amount))) {
-        setWarning('Please enter a valid amount to buy');
-        return;
-      }
-      
-      setWarning('');
+      // Wallet not connected -> connect wallet first, then open widget after connection
+      console.log('🔌 Wallet not connected, connecting first...');
+      shouldOpenWertAfterConnect.current = true;
       connect();
     }
   };
