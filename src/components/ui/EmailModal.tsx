@@ -121,7 +121,7 @@ const EmailModal: React.FC<EmailModalProps> = ({ isOpen, onSubmit, onCancel, isL
                   Sending...
                 </>
               ) : (
-                'Send Wallaneer Link'
+                'VERIFY'
               )}
             </button>
           </div>
