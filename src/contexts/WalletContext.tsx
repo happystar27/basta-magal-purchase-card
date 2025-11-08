@@ -25,6 +25,80 @@ interface WalletProviderProps {
 const WalletContextProvider: React.FC<WalletProviderProps> = ({ children }) => {
   const { connected, publicKey, connecting, select, disconnect: solanaDisconnect, wallet } = useSolanaWallet();
   
+  // Track if we've initiated a connection request
+  const connectionRequested = React.useRef(false);
+
+  // Handle Magic Link callback - auto-reconnect when returning from email verification
+  React.useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const magicToken = urlParams.get('magic_credential');
+    const magicState = urlParams.get('state');
+    const isMagicCallback = !!(magicToken || magicState);
+    
+    if (isMagicCallback) {
+      console.log('🔗 Magic Link callback detected in WalletContext!');
+      console.log('   Connected:', connected);
+      console.log('   Connecting:', connecting);
+      console.log('   Wallet:', wallet?.adapter?.name);
+      console.log('   Magic token present:', !!magicToken);
+      
+      // If already connected or connecting, don't do anything
+      if (connected || connecting) {
+        console.log('   Already connected/connecting, skipping...');
+        return undefined;
+      }
+      
+      // Ensure Wallaneer is selected
+      if (wallet?.adapter?.name !== 'Wallaneer') {
+        console.log('🔄 Selecting Wallaneer wallet...');
+        select('Wallaneer' as any);
+        // Don't return here - let it continue to connect in the next render
+        return undefined;
+      }
+      
+      // Trigger connection immediately - the adapter will handle the credential
+      console.log('🔄 Triggering wallet connection to process Magic credential...');
+      const connectAfterCallback = setTimeout(async () => {
+        try {
+          if (wallet?.adapter && !connected && !connecting) {
+            console.log('🚀 Calling wallet.adapter.connect()...');
+            await wallet.adapter.connect();
+            console.log('✅ Wallet connected successfully after Magic callback');
+          }
+        } catch (error: any) {
+          console.error('❌ Error connecting after Magic callback:', error);
+          console.error('   Error message:', error.message);
+        }
+      }, 300); // Reduced delay - the adapter will handle the credential processing
+      
+      return () => clearTimeout(connectAfterCallback);
+    }
+    return undefined;
+  }, [connected, connecting, wallet, select]); // Re-run when wallet state changes
+  
+  // Auto-trigger connection when Wallaneer is selected (for regular connect flow)
+  React.useEffect(() => {
+    // Only trigger if we have a connection request pending and Wallaneer is now selected
+    if (connectionRequested.current && wallet?.adapter?.name === 'Wallaneer' && !connected && !connecting) {
+      console.log('🔄 Wallaneer selected, triggering connection...');
+      connectionRequested.current = false; // Reset flag
+      
+      const triggerConnect = setTimeout(async () => {
+        try {
+          if (wallet?.adapter && !connected && !connecting) {
+            console.log('🚀 Auto-calling wallet.adapter.connect() after selection...');
+            await wallet.adapter.connect();
+          }
+        } catch (error: any) {
+          console.error('❌ Error auto-connecting after selection:', error);
+        }
+      }, 100);
+      
+      return () => clearTimeout(triggerConnect);
+    }
+    return undefined;
+  }, [wallet, connected, connecting]);
+  
   // Debug wallet connection
   React.useEffect(() => {
     // console.log('🔄 Wallet state changed:', {
@@ -42,32 +116,23 @@ const WalletContextProvider: React.FC<WalletProviderProps> = ({ children }) => {
       console.log('Currently connecting:', connecting);
       console.log('Currently connected:', connected);
       
-      // If Wallaneer is already selected but not connected, deselect first
-      if (wallet?.adapter?.name === 'Wallaneer' && !connected && !connecting) {
-        console.log('🔄 Wallaneer already selected but not connected, deselecting first...');
-        await solanaDisconnect();
-        // Small delay to ensure disconnect completes
-        await new Promise(resolve => setTimeout(resolve, 100));
+      // If Wallaneer is not selected, select it and set flag
+      if (wallet?.adapter?.name !== 'Wallaneer') {
+        console.log('🔄 Selecting Wallaneer wallet...');
+        connectionRequested.current = true; // Set flag so effect will trigger connection
+        select('Wallaneer' as any);
+        return;
       }
       
-      console.log('✅ Calling select(Wallaneer)...');
-      // Always connect directly to Wallaneer without showing wallet selection dialog
-      select('Wallaneer' as any);
-      
-      // Force trigger connection if wallet is already selected
-      if (wallet?.adapter?.name === 'Wallaneer') {
-        console.log('🔄 Wallet already selected, triggering connect...');
-        setTimeout(async () => {
-          try {
-            await wallet.adapter.connect();
-          } catch (err) {
-            console.error('Error forcing connection:', err);
-          }
-        }, 200);
+      // If Wallaneer is already selected, just call connect directly
+      console.log('✅ Wallaneer already selected, calling connect directly...');
+      if (wallet?.adapter) {
+        await wallet.adapter.connect();
       }
     } catch (error) {
       // If Wallaneer fails for some reason, still try Phantom as fallback
       console.error('Failed to connect with Wallaneer wallet:', error);
+      connectionRequested.current = false; // Reset flag on error
       select('Phantom' as any);
     }
   };
@@ -112,7 +177,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   return (
     <ConnectionProvider endpoint={endpoint}>
-      <SolanaWalletProvider wallets={wallets} autoConnect>
+      <SolanaWalletProvider wallets={wallets} autoConnect={false}>
         <WalletModalProvider>
           <WalletContextProvider>
             {children}

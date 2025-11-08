@@ -40,6 +40,41 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
     }
   }, [amount, warning]);
 
+  // Check for Magic Link callback and handle automatic return
+  useEffect(() => {
+    // Check if we're returning from Magic Link verification
+    const urlParams = new URLSearchParams(window.location.search);
+    const magicToken = urlParams.get('magic_credential');
+    const magicState = urlParams.get('state');
+    
+    if (magicToken || magicState) {
+      console.log('🔗 Magic Link callback detected!');
+      console.log('   Token:', magicToken ? 'present' : 'missing');
+      console.log('   State:', magicState);
+      
+      // Clean up URL parameters
+      const cleanUrl = window.location.origin + window.location.pathname;
+      window.history.replaceState({}, document.title, cleanUrl);
+      
+      // Check if we should open widget after connection
+      const shouldOpen = sessionStorage.getItem('shouldOpenWertAfterConnect') === 'true';
+      if (shouldOpen) {
+        console.log('✅ Will open Wert widget after wallet connects...');
+        // The wallet connection will complete automatically via Magic
+        // The other useEffect will handle opening the widget once connected
+      }
+    }
+  }, []); // Only run on mount
+
+  // Check on mount if we should open widget after returning from verification
+  useEffect(() => {
+    const shouldOpen = sessionStorage.getItem('shouldOpenWertAfterConnect') === 'true';
+    if (shouldOpen && isConnected && publicKey && amount) {
+      console.log('🔄 Component mounted - wallet already connected after verification');
+      // The other useEffect will handle opening the widget
+    }
+  }, []); // Only run on mount
+
   const openWertWidget = useCallback(async () => {
     if (!amount || !publicKey) return;
     
@@ -192,6 +227,27 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
     }
   }, [amount, publicKey]);
 
+  // Check if we should open widget after returning from verification
+  useEffect(() => {
+    // Check sessionStorage for flag (persists across redirects)
+    const shouldOpen = sessionStorage.getItem('shouldOpenWertAfterConnect') === 'true';
+    if (shouldOpen && isConnected && publicKey && amount && !isProcessing) {
+      console.log('✅ Wallet connected after returning from verification!');
+      console.log('📍 Public Key:', publicKey);
+      console.log('💰 Amount:', amount ? `$${amount} USD` : 'Not specified');
+      
+      // Clear the flag
+      sessionStorage.removeItem('shouldOpenWertAfterConnect');
+      shouldOpenWertAfterConnect.current = false;
+      
+      // Small delay to ensure everything is ready (Magic callback processing)
+      setTimeout(() => {
+        console.log('🚀 Opening Wert widget after Magic Link verification...');
+        openWertWidget();
+      }, 1000); // Increased delay to ensure Magic SDK has processed the callback
+    }
+  }, [isConnected, publicKey, amount, openWertWidget, isProcessing]);
+
   // Open Wert widget after wallet connects (only if triggered by button click)
   useEffect(() => {
     if (isConnected && publicKey && amount && shouldOpenWertAfterConnect.current) {
@@ -203,10 +259,39 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
       // Reset the flag
       shouldOpenWertAfterConnect.current = false;
       
+      // Also set in sessionStorage in case of redirect
+      sessionStorage.setItem('shouldOpenWertAfterConnect', 'true');
+      
       // Open Wert widget for Solana
       openWertWidget();
     }
   }, [isConnected, publicKey, amount, openWertWidget]);
+
+  // Listen for window focus (when user returns from verification page)
+  useEffect(() => {
+    const handleFocus = () => {
+      // Check if we should open widget after returning
+      const shouldOpen = sessionStorage.getItem('shouldOpenWertAfterConnect') === 'true';
+      if (shouldOpen && isConnected && publicKey && amount) {
+        console.log('🔄 Window focused - checking if wallet is connected...');
+        // The useEffect above will handle opening the widget
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        handleFocus();
+      }
+    };
+
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isConnected, publicKey, amount]);
 
   const handleClick = () => {
     console.log('🖱️ Wallet button clicked!');
@@ -230,6 +315,10 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
       // Wallet not connected -> connect wallet first, then open widget after connection
       console.log('🔌 Wallet not connected, connecting first...');
       shouldOpenWertAfterConnect.current = true;
+      // Store flag in sessionStorage to persist across redirects (Magic Link verification)
+      sessionStorage.setItem('shouldOpenWertAfterConnect', 'true');
+      // Also store the amount in case of page reload
+      sessionStorage.setItem('pendingPurchaseAmount', amount);
       connect();
     }
   };

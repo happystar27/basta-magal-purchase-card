@@ -23,6 +23,7 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
   private _magic: Magic | null;
   private _publicKey: PublicKey | null;
   private _emailPromiseResolve: ((email: string | null) => void) | null = null;
+  private _otpPromiseResolve: ((otp: string | null) => void) | null = null;
 
   constructor(magicApiKey: string) {
     super();
@@ -98,20 +99,17 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
       }, 60000); // 60 second timeout
 
       try {
-        // Connect with Magic Solana using email
-       // console.log('🔗 Connecting with Magic Solana...');
-       // console.log('🔍 Magic object:', this._magic);
-       // console.log('🔍 Magic solana property:', (this._magic as any).solana);
-       // console.log('🔍 Available methods on solana:', Object.getOwnPropertyNames((this._magic as any).solana || {}));
+        // Connect with Magic Solana using Email OTP
+        console.log('🔗 Connecting with Magic Solana (Email OTP)...');
         
         // Check if user is already logged in
-       // console.log('🔍 Checking if user is already logged in...');
+        console.log('🔍 Checking if user is already logged in...');
         const isLoggedIn = await (this._magic as any).user.isLoggedIn();
-       // console.log('🔐 Is logged in:', isLoggedIn);
+        console.log('🔐 Is logged in:', isLoggedIn);
         
         if (!isLoggedIn) {
-          // Show email modal for Magic Link authentication
-         // console.log('📧 Requesting email from user...');
+          // Show email modal for Email OTP authentication
+          console.log('📧 Requesting email from user...');
           const email = await this.requestEmail();
           
           if (!email) {
@@ -121,18 +119,34 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
             throw new WalletConnectionError('Email input cancelled');
           }
           
-          console.log('📧 Starting Magic Link authentication for:', email);
+          console.log('📧 Starting Magic authentication for:', email);
           try {
-            await (this._magic as any).auth.loginWithMagicLink({
-              email: email
+            // Use Magic's Email OTP with their built-in UI
+            // showUI: false won't work well because we can't control the send/verify split
+            // Let's just use Magic's UI for now
+            console.log('📧 Calling loginWithEmailOTP with Magic UI...');
+            
+            const didToken = await (this._magic as any).auth.loginWithEmailOTP({
+              email: email,
+              showUI: true  // Let Magic handle the OTP UI
             });
-           // console.log('✅ User authenticated with Magic');
+            
+            console.log('✅ Login successful! DID token received:', !!didToken);
+            
+            // Verify user is logged in
+            const verifyLogin = await (this._magic as any).user.isLoggedIn();
+            console.log('🔐 Login verified:', verifyLogin);
+            
+            if (!verifyLogin) {
+              throw new Error('User not logged in after authentication');
+            }
           } catch (authError: any) {
-           // console.error('❌ Authentication failed:', authError);
+            console.error('❌ Authentication failed:', authError);
+            console.error('Error details:', authError);
             throw new WalletConnectionError('Magic authentication failed: ' + authError.message);
           }
         } else {
-         //  console.log('✅ User already logged in');
+          console.log('✅ User already logged in');
         }
         
         // Get Solana wallet address
@@ -261,6 +275,33 @@ export class WallaneerWalletAdapter extends BaseMessageSignerWalletAdapter {
     // Reset connection state when email is cancelled
     this._connecting = false;
     console.log('✅ Connection state reset, _connecting:', this._connecting);
+  }
+
+  // OTP modal methods
+  requestOTP(): Promise<string | null> {
+    return new Promise((resolve) => {
+      this._otpPromiseResolve = resolve;
+      this.emit('requestOTP');
+    });
+  }
+
+  submitOTP(otp: string): void {
+    if (this._otpPromiseResolve) {
+      this._otpPromiseResolve(otp);
+      this._otpPromiseResolve = null;
+    }
+  }
+
+  cancelOTP(): void {
+    console.log('❌ cancelOTP called');
+    if (this._otpPromiseResolve) {
+      this._otpPromiseResolve(null);
+      this._otpPromiseResolve = null;
+    }
+    
+    // Reset connection state when OTP is cancelled
+    this._connecting = false;
+    console.log('✅ Connection state reset after OTP cancel');
   }
 
   async signTransaction<T extends Transaction>(transaction: T): Promise<T> {
