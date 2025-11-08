@@ -1,6 +1,7 @@
 import { BridgeHeader, ClaimInfo } from './components';
 import { WalletProvider } from './contexts/WalletContext';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { LanguageProvider } from './contexts/LanguageContext';
 import { NotificationProvider } from './components/ui/NotificationProvider';
 import WallaneerEmailHandler from './components/ui/WallaneerEmailHandler';
 import WalletModalCustomization from './components/ui/WalletModalCustomization';
@@ -11,9 +12,10 @@ import PoseCharacter from './components/ui/PoseCharacter';
 
 function App() {
   return (
-    <ThemeProvider>
-      <NotificationProvider>
-        <WalletProvider>
+    <LanguageProvider>
+      <ThemeProvider>
+        <NotificationProvider>
+          <WalletProvider>
           <div className="flex overflow-hidden relative flex-col min-h-screen App">
           {/* Anime-style background effects */}
           <AnimeBackgroundEffects />
@@ -39,9 +41,10 @@ function App() {
           <WalletModalCustomization />
           
         </div>
-        </WalletProvider>
-      </NotificationProvider>
-    </ThemeProvider>
+          </WalletProvider>
+        </NotificationProvider>
+      </ThemeProvider>
+    </LanguageProvider>
   );
 }
 

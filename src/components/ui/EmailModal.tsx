@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface EmailModalProps {
   isOpen: boolean;
@@ -19,6 +20,7 @@ const EmailModal: React.FC<EmailModalProps> = ({
   showOTPInput = false,
   submittedEmailProp = ''
 }) => {
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [submittedEmail, setSubmittedEmail] = useState('');
@@ -29,12 +31,12 @@ const EmailModal: React.FC<EmailModalProps> = ({
     e.preventDefault();
     
     if (!email) {
-      setError('Email is required');
+      setError(t.emailRequired);
       return;
     }
     
     if (!email.includes('@')) {
-      setError('Please enter a valid email address');
+      setError(t.invalidEmail);
       return;
     }
     
@@ -47,12 +49,12 @@ const EmailModal: React.FC<EmailModalProps> = ({
     e.preventDefault();
     
     if (!otp) {
-      setOtpError('Verification code is required');
+      setOtpError(t.verificationCodeRequired);
       return;
     }
     
     if (otp.length !== 6) {
-      setOtpError('Please enter a valid 6-digit code');
+      setOtpError(t.invalidCode);
       return;
     }
     
@@ -86,7 +88,7 @@ const EmailModal: React.FC<EmailModalProps> = ({
         <div className="p-6 mx-4 w-full max-w-md bg-white rounded-lg">
           <div className="flex items-center mb-4">
             <img src="/assets/wallaneer.svg" alt="Wallaneer" className="mr-3 w-8 h-8" />
-            <h2 className="text-xl font-semibold text-gray-800">Enter Verification Code</h2>
+            <h2 className="text-xl font-semibold text-gray-800">{t.enterVerificationCode}</h2>
           </div>
           
           <div className="mb-4">
@@ -97,21 +99,21 @@ const EmailModal: React.FC<EmailModalProps> = ({
             </div>
             
             <p className="mb-2 text-center text-gray-700">
-              We've sent a 6-digit verification code to:
+              {t.verificationCodeSentTo}
             </p>
             <p className="mb-4 text-center text-gray-900 font-semibold">
               {displayEmail}
             </p>
             
             <p className="mb-4 text-sm text-center text-gray-600">
-              Please check your email and enter the code below.
+              {t.checkEmailEnterCode}
             </p>
           </div>
           
           <form onSubmit={handleOTPSubmit}>
             <div className="mb-4">
               <label htmlFor="otp" className="block mb-2 text-sm font-medium text-gray-700">
-                Verification Code
+                {t.verificationCode}
               </label>
               <input
                 type="text"
@@ -155,7 +157,7 @@ const EmailModal: React.FC<EmailModalProps> = ({
                   boxShadow: '3px 5px #6b72804d',
                 }}
               >
-                Cancel
+                {t.cancel}
               </button>
               <button
                 type="submit"
@@ -181,10 +183,10 @@ const EmailModal: React.FC<EmailModalProps> = ({
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Verifying...
+                    {t.verifying}
                   </>
                 ) : (
-                  'VERIFY CODE'
+                  t.verifyCode
                 )}
               </button>
             </div>
@@ -200,17 +202,17 @@ const EmailModal: React.FC<EmailModalProps> = ({
       <div className="p-6 mx-4 w-full max-w-md bg-white rounded-lg">
         <div className="flex items-center mb-4">
           <img src="/assets/wallaneer.svg" alt="Wallaneer" className="mr-3 w-8 h-8" />
-          <h2 className="text-xl font-semibold text-gray-800">Get Verification Code</h2>
+          <h2 className="text-xl font-semibold text-gray-800">{t.getVerificationCode}</h2>
         </div>
         
         <p className="mb-4 text-gray-600">
-          Enter your email address to receive a verification code for secure wallet access.
+          {t.enterEmailDescription}
         </p>
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">
-              Email Address
+              {t.emailAddress}
             </label>
             <input
               type="email"
@@ -249,9 +251,9 @@ const EmailModal: React.FC<EmailModalProps> = ({
                 boxShadow: '3px 5px #6b72804d',
                 whiteSpace: 'nowrap',
               }}
-            >
-              Cancel
-            </button>
+              >
+                {t.cancel}
+              </button>
             <button
               type="submit"
               disabled={isLoading}
@@ -277,10 +279,10 @@ const EmailModal: React.FC<EmailModalProps> = ({
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
-                  Sending...
+                  {t.sending}
                 </>
               ) : (
-                'VERIFY'
+                t.verify
               )}
             </button>
           </div>

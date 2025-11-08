@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { FaShoppingCart, FaWallet } from "react-icons/fa";
 import type { ClaimerInfo } from "../../types/claimer";
 import { useWallet } from "../../contexts/WalletContext";
+import { useLanguage } from "../../contexts/LanguageContext";
 import { signSmartContractData } from "@wert-io/widget-sc-signer";
 import { v4 as uuidv4 } from "uuid";
 import Card from "./Card";
@@ -26,6 +27,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
   isLoading = false,
 }) => {
   const { isConnected, publicKey } = useWallet();
+  const { t } = useLanguage();
   const [buyAmount, setBuyAmount] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -33,12 +35,12 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
     const amountToBuy = Number(buyAmount);
 
     if (amountToBuy <= 0 || isNaN(amountToBuy)) {
-      alert("Please enter a valid amount");
+      alert(t.pleaseEnterValidAmount);
       return;
     }
 
     if (!isConnected || !publicKey) {
-      alert("Please connect your wallet first");
+      alert(t.pleaseConnectWallet);
       return;
     }
 
@@ -74,7 +76,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
           error: (error: any) => {
             setIsProcessing(false);
             console.error("Wert error: ", error);
-            alert("An error occurred. Please try again.");
+            alert(t.errorOccurred);
           },
           loaded: () => console.log("Wert widget loaded"),
         },
@@ -86,7 +88,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
       if (!WertWidget) {
         console.error("WertWidget not loaded");
         setIsProcessing(false);
-        alert("Payment widget not loaded. Please refresh the page.");
+        alert(t.paymentWidgetNotLoaded);
         return;
       }
 
@@ -99,7 +101,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
     } catch (error) {
       console.error("Error opening Wert widget:", error);
       setIsProcessing(false);
-      alert("Failed to open payment widget");
+      alert(t.failedToOpenPaymentWidget);
     }
   };
 
@@ -107,7 +109,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
     return (
       <Card>
         <h3 className="mb-4 text-lg font-semibold text-gray-800 dark:text-white">
-          Buy Tokens
+          {t.buyTokens}
         </h3>
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
@@ -131,7 +133,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
         <div className="flex items-center mb-3 space-x-2">
           <FaShoppingCart className="w-5 h-5 text-[#6b7280]" />
           <h4 className="font-semibold text-center text-[#6b7280] uppercase dark:text-white">
-            Buy Tokens
+            {t.buyTokens}
           </h4>
         </div>
 
@@ -141,14 +143,14 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
               htmlFor="buyAmount"
               className="block mb-2 text-sm text-gray-700 dark:text-gray-400"
             >
-              Amount (USD)
+              {t.amountUSD}
             </label>
             <input
               type="number"
               id="buyAmount"
               value={buyAmount}
               onChange={(e) => setBuyAmount(e.target.value)}
-              placeholder="Enter amount"
+              placeholder={t.enterAmount}
               min="0"
               step="0.01"
               disabled={isProcessing}
@@ -161,7 +163,7 @@ const ClaimDetails: React.FC<ClaimDetailsProps> = ({
           </div>
 
           <p className="text-xs text-center text-gray-600 dark:text-gray-400">
-            Powered by Magallaneer - Buy crypto with card
+            {t.poweredByMagallaneer}
           </p>
         </div>
       </div>

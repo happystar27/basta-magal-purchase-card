@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useWallet } from '../../contexts/WalletContext';
+import { useLanguage } from '../../contexts/LanguageContext';
 import WertWidget from "@wert-io/widget-initializer";
 import { signSmartContractData } from "@wert-io/widget-sc-signer";
 import { v4 as uuidv4 } from "uuid";
@@ -27,6 +28,7 @@ const WERT_ORIGIN = "https://widget.wert.io";
 
 const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
   const { connect, disconnect, isConnected, publicKey, isLoading } = useWallet();
+  const { t } = useLanguage();
   const [warning, setWarning] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
@@ -301,7 +303,7 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
     
     // Check if amount is entered (required for both cases)
     if (!amount || amount.trim() === '' || Number(amount) <= 0 || isNaN(Number(amount))) {
-      setWarning('Please enter a valid amount to buy');
+      setWarning(t.enterValidAmount);
       return;
     }
     
@@ -324,11 +326,11 @@ const WalletConnect: React.FC<WalletConnectProps> = ({ amount }) => {
   };
 
   const getButtonText = () => {
-    if (isLoading) return 'Connecting...';
+    if (isLoading) return t.connecting;
     // if (isConnected && publicKey) {
     //   return `${publicKey.slice(0, 4)}...${publicKey.slice(-4)}`;
     // }
-    return 'BUY';
+    return t.buy;
   };
 
   return (

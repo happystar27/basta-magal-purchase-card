@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface PaymentSuccessDialogProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ const PaymentSuccessDialog: React.FC<PaymentSuccessDialogProps> = ({
   amount,
   walletAddress,
 }) => {
+  const { t, isEnglish } = useLanguage();
   if (!isOpen) return null;
 
   // Determine if we're on mainnet or devnet based on the transaction signature format
@@ -62,13 +64,13 @@ const PaymentSuccessDialog: React.FC<PaymentSuccessDialogProps> = ({
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-center text-gray-900 mb-2">
-          Payment Successful! 🎉
+          {t.paymentSuccessful}
         </h2>
 
         {/* Amount */}
         {amount && (
           <p className="text-center text-gray-600 mb-4">
-            You've successfully purchased <span className="font-semibold">${amount} USD</span> worth of tokens
+            {t.successfullyPurchased} <span className="font-semibold">${amount} USD</span> {isEnglish ? ' worth of tokens' : ' en tokens'}
           </p>
         )}
 
@@ -76,7 +78,7 @@ const PaymentSuccessDialog: React.FC<PaymentSuccessDialogProps> = ({
         {transactionSignature && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Transaction Signature:
+              {t.transactionSignature}
             </label>
             <div className="flex items-center gap-2 bg-gray-50 p-3 rounded-lg border border-gray-200">
               <code className="flex-1 text-xs text-gray-800 break-all font-mono">
@@ -85,9 +87,9 @@ const PaymentSuccessDialog: React.FC<PaymentSuccessDialogProps> = ({
               <button
                 onClick={() => copyToClipboard(transactionSignature)}
                 className="px-3 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded transition-colors"
-                title="Copy to clipboard"
+                title={t.copyToClipboard}
               >
-                Copy
+                {t.copy}
               </button>
             </div>
           </div>
@@ -115,7 +117,7 @@ const PaymentSuccessDialog: React.FC<PaymentSuccessDialogProps> = ({
                   d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                 />
               </svg>
-              View Transaction on Solscan
+              {isEnglish ? 'View Transaction on Solscan' : 'Ver Transacción en Solscan'}
             </a>
           )}
 
@@ -139,7 +141,7 @@ const PaymentSuccessDialog: React.FC<PaymentSuccessDialogProps> = ({
                   d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"
                 />
               </svg>
-              View Wallet on Solscan
+              {t.viewWalletOnSolscan}
             </a>
           )}
 
@@ -147,13 +149,13 @@ const PaymentSuccessDialog: React.FC<PaymentSuccessDialogProps> = ({
             onClick={onClose}
             className="w-full px-4 py-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold rounded-lg transition-colors"
           >
-            Close
+            {t.close}
           </button>
         </div>
 
         {/* Info Message */}
         <p className="mt-4 text-xs text-center text-gray-500">
-          Your tokens will be sent to your wallet shortly. Please check your wallet or the transaction link above.
+          {t.tokensWillBeSent}
         </p>
       </div>
     </div>

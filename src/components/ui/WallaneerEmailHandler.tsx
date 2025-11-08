@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useWallet as useSolanaWallet } from '@solana/wallet-adapter-react';
 import EmailModal from './EmailModal';
 import { useNotifications } from './NotificationProvider';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 const WallaneerEmailHandler: React.FC = () => {
   const { wallet } = useSolanaWallet();
@@ -10,6 +11,7 @@ const WallaneerEmailHandler: React.FC = () => {
   const [showOTPInput, setShowOTPInput] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState('');
   const { addNotification } = useNotifications();
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (wallet?.adapter?.name === 'Wallaneer') {
@@ -56,8 +58,8 @@ const WallaneerEmailHandler: React.FC = () => {
     // Show notification to check email for code
     addNotification({
       type: 'info',
-      title: 'Verification Code Sent',
-      message: `We've sent a 6-digit verification code to <strong>${email}</strong>. Please check your email.`,
+      title: t.verificationCodeSentTitle,
+      message: `${t.verificationCodeSentMessage} <strong>${email}</strong>. ${t.checkEmailEnterCode}`,
       duration: 8000
     });
     
