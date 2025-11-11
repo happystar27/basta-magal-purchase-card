@@ -139,7 +139,7 @@ const translations: { en: Translations; es: Translations } = {
     verificationCodeSentTitle: 'Código de Verificación Enviado',
     verificationCodeSentMessage: 'Hemos enviado un código de verificación de 6 dígitos a',
     magalAndBasta: '$BASTA',
-    bastaMagalMadeEasy: 'Magal Hecho Fácil:',
+    bastaMagalMadeEasy: 'BASTA Hecho Fácil:',
     oneCardBalancedTokens: 'Una Tarjeta, Tokens Balanceados,',
     zeroHassle: 'Sin Complicaciones',
     buyTokens: 'Comprar Tokens',
